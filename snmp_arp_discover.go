@@ -18,6 +18,7 @@ var hosts map[string]int
 func main() {
 	entrypoint := flag.String("e", "entrypoint", "First host to query")
 	community := flag.String("c", "public", "SNMP community string")
+	devdb := flag.String("d", "http://10.30.20.7/cgi-bin/dev/dbapi", "devdb api endpoint")
 	flag.Parse()
 	if *entrypoint == "entrypoint" {
 		flag.PrintDefaults()
@@ -30,6 +31,7 @@ func main() {
 		hn := getname(ip)
 		osstr := get_os(ip, *community)
 		fmt.Printf("%s: %s: %s\n", ip, hn, osstr)
+		touch_host(*devdb, ip, osstr)
 	}
 }
 
