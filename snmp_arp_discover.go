@@ -54,29 +54,15 @@ func merge_hosts(tgt string, community string) {
 		}
 	}
 }
+
 func get_os(tgt string, community string) string {
-
-	osoid := ".1.3.6.1.2.1.47.1.1.1.1.2"
-	snmphost := &gosnmp.GoSNMP {
-		Target:  tgt,
-		Port: gosnmp.Default.Port,
-		Community: community,
-		Version: gosnmp.Version2c,
-		Timeout: time.Duration(2*time.Second),
-		//Logger: log.New(os.Stdout, "", 0),
-		Logger: nil,
+	fingerp := snmp_fingerprint(tgt, community)
+	if(len(fingerp) > 2) {
+		return(fingerp)
 	}
-
-	err := snmphost.Connect()
-	if err == nil {
-		defer snmphost.Conn.Close()
-	} else {
-		return("unknown")
-	}
-
-	result, _ := snmphost.WalkAll(osoid)
-	for _, r := range result {
-		return(string(r.Value.([]byte)))
+	fingerp = ssh_fingerprint(tgt)
+	if(len(fingerp) > 2) {
+		return(fingerp)
 	}
 	return("unknown")
 }
