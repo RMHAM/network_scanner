@@ -64,6 +64,10 @@ func get_os(tgt string, community string) string {
 	if(len(fingerp) > 2) {
 		return(fingerp)
 	}
+	fingerp = web_fingerprint(tgt)
+	if(len(fingerp) > 2) {
+		return(fingerp)
+	}	
 	return("unknown")
 }
 
