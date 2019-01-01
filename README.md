@@ -6,4 +6,4 @@ Quick and dirty network discovery tool which does a recurisve walk of a network 
 
     go get -d ./
     go build
-    ./snmp_arp_discover -e "some_router" -c "public"
+    ./network_scanner -e "some_router" -c "public"
