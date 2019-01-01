@@ -29,7 +29,7 @@ func main() {
 	merge_hosts(*entrypoint, *community)
 	for ip, _ := range(hosts) {
 		hn := getname(ip)
-		osstr := get_os(ip, *community)
+		osstr := get_os(ip, *community, *devdb)
 		fmt.Printf("%s: %s: %s\n", ip, hn, osstr)
 		touch_host(*devdb, ip, osstr)
 	}
@@ -55,7 +55,10 @@ func merge_hosts(tgt string, community string) {
 	}
 }
 
-func get_os(tgt string, community string) string {
+func get_os(tgt string, community string, devdb string) string {
+	if(!check_subnet(devdb, tgt)) {
+		return "unknown"
+	}
 	fingerp := snmp_fingerprint(tgt, community)
 	if(len(fingerp) > 2) {
 		return(fingerp)
