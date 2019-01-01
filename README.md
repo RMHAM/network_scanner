@@ -5,5 +5,5 @@ Quick and dirty network discovery tool which does a recurisve walk of a network 
 # INSTALL/RUN
 
     go get -d ./
-    go build snmp_arp_discover.go
+    go build
     ./snmp_arp_discover -e "some_router" -c "public"
