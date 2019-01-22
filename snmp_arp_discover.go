@@ -43,7 +43,12 @@ func getname(ip string) string {
 		return(hn[0])
 }
 func merge_hosts(tgt string, community string) {
-	newhosts := get_arp_table(tgt, community)
+	newhosts := get_routing_table(tgt, community)
+	merge_host_list(newhosts, community)
+	newhosts = get_arp_table(tgt, community)
+	merge_host_list(newhosts, community)
+}
+func merge_host_list(newhosts map[string]int, community string) {
 	for ip, _ := range newhosts {
 		_, have := hosts[ip]
 		hosts[ip] = hosts[ip]+1
@@ -99,6 +104,35 @@ func get_arp_table(tgt string, community string) map[string]int {
 	for _, r := range result {
 		outoid := strings.Split(r.Name, ".")
 		ip := strings.Join(outoid[len(outoid)-4:len(outoid)], ".")
+		hosts[ip] = hosts[ip]+1
+	}
+	return(hosts)
+}
+
+func get_routing_table(tgt string, community string) map[string]int {
+	hosts := make(map[string]int)
+
+	arpoid := ".1.3.6.1.2.1.4.21.1.7"
+	snmphost := &gosnmp.GoSNMP {
+		Target:  tgt,
+		Port: gosnmp.Default.Port,
+		Community: community,
+		Version: gosnmp.Version2c,
+		Timeout: time.Duration(2*time.Second),
+		//Logger: log.New(os.Stdout, "", 0),
+		Logger: nil,
+	}
+
+	err := snmphost.Connect()
+	if err == nil {
+		defer snmphost.Conn.Close()
+	} else {
+		return(hosts)
+	}
+
+	result, _ := snmphost.WalkAll(arpoid)
+	for _, r := range result {
+		ip := r.Value.(string)
 		hosts[ip] = hosts[ip]+1
 	}
 	return(hosts)
